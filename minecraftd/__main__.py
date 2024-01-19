@@ -85,9 +85,9 @@ def attachSession(server_cfg):
 
 def main():
 
-	server_name = sys.argv
-	if server_name == '' or server_name is None:
-		print("Must supply a server name!")
+	server_name = sys.argv[-1]
+	if server_name == __file__ or server_name == '--daemon':
+		print("CRITICAL: Must supply a server name!")
 		sys.exit(1)
 
 	try:
