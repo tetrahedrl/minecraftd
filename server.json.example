@@ -1,0 +1,26 @@
+{
+    "server": {
+        
+		"console_socket_path" : "/var/lib/minecraftd/default.sock",
+        "server_path" : "/opt/minecraft/default",
+        "server_jar" : "server.jar",
+        "java" : "java",
+
+        "jvm_arguments" : [
+            "-XX:+UnlockExperimentalVMOptions",
+            "-XX:+UseG1GC",
+            "-XX:G1NewSizePercent=20",
+            "-XX:G1ReservePercent=20",
+            "-XX:MaxGCPauseMillis=50",
+            "-XX:G1HeapRegionSize=16M",
+            "-server",
+            "-Xms4G",
+            "-Xmx6G"
+        ],
+
+        "shutdown_commands" : [
+            "save-all",
+            "stop"
+        ]
+    }
+}

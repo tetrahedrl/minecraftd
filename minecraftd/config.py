@@ -4,6 +4,15 @@ import logging
 
 class Config():
 
+	def __init__(self,fname): # may throw various exceptions
+
+		self.fname = fname
+		with open(fname) as f:
+			self._cfg = json.load(f)
+
+		
+class ProgramConfig(Config):
+	
 	_loglevel_table = {} # okay, I know that those have a numerical value as well, but I'd like to present a nicer way to set those in the config file
 	_loglevel_table['DEBUG'] 	= logging.DEBUG
 	_loglevel_table['INFO'] 	= logging.INFO
@@ -11,11 +20,9 @@ class Config():
 	_loglevel_table['ERROR'] 	= logging.ERROR
 	_loglevel_table['CRITICAL'] 	= logging.CRITICAL
 
-	def __init__(self,fname): # may throw various exceptions
-
-		with open(fname) as f:
-			self._cfg = json.load(f)
-
+	def servers(self):
+		return {name:path for name, path in self._cfg['minecraftd']['servers'].items()}
+	
 
 	def logLevel(self):
 
@@ -35,7 +42,17 @@ class Config():
 
 		except KeyError:
 			return "" # default = no logfile
+		
 
+	def historyLen(self):
+
+		try:
+			return self._cfg['minecraftd']['history_length']
+
+		except KeyError:
+			return 24
+	
+class ServerConfig(Config):
 
 	def compileCommand(self): # no default
 
@@ -62,16 +79,7 @@ class Config():
 
 		except KeyError:
 			return "/var/lib/minecraftd/control.sock"
-
-
-	def historyLen(self):
-
-		try:
-			return self._cfg['minecraftd']['history_length']
-
-		except KeyError:
-			return 24
-
+		
 
 	def shutdownCommands(self):
 
