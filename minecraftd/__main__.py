@@ -97,7 +97,7 @@ def main():
 
 	try:
 		program_cfg = ProgramConfig(config_file_to_load)
-		server_cfg = ServerConfig(program_cfg.servers[server_name])
+		server_cfg = ServerConfig(program_cfg.servers()[server_name])
 
 	except Exception as e:
 		print("CRITICAL: Failed to load config file: {}".format(str(e)))
