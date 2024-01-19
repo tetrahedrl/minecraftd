@@ -17,8 +17,7 @@ Since google led me nowhere with this problem, I decided to write my own script 
 - Service like start/stop/restart of a minecraft server. No more screens and tmuxes
 - Easy to configure and run
 - Attachable/detachable console with unix permissions
-- Compatible with any flavour of minecraft server
-- Run multiple servers with systemd instances
+- Compatible with any flavour of minecraft server, or init system (example for systemd provided)
 
 ## Usage
 
@@ -40,7 +39,7 @@ First, clone the repo, and install minecraftd:
 ```bash
 git clone https://github.com/marcsello/minecraftd.git
 cd minecraftd
-./install.sh
+sudo ./install.sh
 ```
 
 Next you should copy the example configuration file to it's place:  
@@ -55,48 +54,39 @@ sudo nano /etc/minecraftd.json
 ```
 ```json5
 {
-	"minecraftd": {
-		"logfile" : "",
-		"history_length" : 10,
-		"log_level" : "INFO",
-		"servers" : [
-			{
-				"server_name" : "default",
-                                "server_config" : "/opt/minecraft/default/server.json"
-			}
-		]
-	}
-}
-```
-```bash
-sudo nano /opt/minecraft/default/server.json
-```
-```json5
-{
-    "server": {
-        
-        "console_socket_path" : "/var/lib/minecraftd/default.sock",
-        "server_path" : "/opt/minecraft/default",
-        "server_jar" : "server.jar",
-        "java" : "java",
 
-        "jvm_arguments" : [
-            "-XX:+UnlockExperimentalVMOptions",
-            "-XX:+UseG1GC",
-            "-XX:G1NewSizePercent=20",
-            "-XX:G1ReservePercent=20",
-            "-XX:MaxGCPauseMillis=50",
-            "-XX:G1HeapRegionSize=16M",
-            "-server",
-            "-Xms4G",
-            "-Xmx6G"
-        ],
+        "server": { // configurations related to your server
+                "server_path" : "/opt/minecraft", // the path that contains your minecraft server
+                "server_jar" : "server.jar", // the name of your server's jar file
+                "java" : "java", // the command which launches java (usually java)
 
-        "shutdown_commands" : [
-            "save-all",
-            "stop"
-        ]
-    }
+                "jvm_arguments" : [ // additional arguments to the JVM, only one argument per entry
+                        "-XX:+UnlockExperimentalVMOptions",
+                        "-XX:+UseG1GC",
+                        "-XX:G1NewSizePercent=20",
+                        "-XX:G1ReservePercent=20",
+                        "-XX:MaxGCPauseMillis=50",
+                        "-XX:G1HeapRegionSize=16M",
+                        "-server",
+                        "-Xms4G",
+                        "-Xmx6G"
+                ],
+
+
+                "shutdown_commands" : [ // commands to run, when the daemon is about to shutdown
+                        "save-all",
+                        "stop"
+                ]
+
+        },
+
+        "minecraftd": { // configurations related to minecraftd behaviour
+		"logfile" : false, // Redirect logging from stderr to a file (won't ever needed probably)
+                "console_socket_path" : "/var/lib/minecraftd/control.sock", // where to place the socket file that is used by the attachable console
+                "history_length" : 10, // last n lines to transmit when a new client is connected (use false or null to disable)
+                "log_level" : "INFO" // ... the log level
+        }
+
 }
 ```
 **You are done with the basic configuration of minecraftd**  
@@ -132,7 +122,7 @@ And then enable and start it:
 ```bash
 sudo systemctl daemon-reload
 sudo systemctl enable minecraftd
-sudo systemctl start minecraftd@default
+sudo systemctl start minecraftd
 ```
 
 #### Give permission to connect the server console
@@ -148,7 +138,7 @@ After that log out, and log back in.
 ### How to use
 When the minecraftd is running (and you have permission to access the console), you can access the console with the following command:
 ```bash
-minecraftd default
+minecraftd
 ```
 
 You can stop or restart the minecraft server with systemctl from now on:

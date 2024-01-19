@@ -9,7 +9,7 @@ Group=minecraft
 KillMode=process
 KillSignal=SIGINT
 
-ExecStart=/usr/local/bin/minecraftd --daemon %i
+ExecStart=/usr/local/bin/minecraftd --daemon
 
 [Install]
 WantedBy=multi-user.target
