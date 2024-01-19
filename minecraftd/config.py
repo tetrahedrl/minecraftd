@@ -29,7 +29,7 @@ class ProgramConfig(Config):
 
 		try:
 			lvl_str = self._cfg['minecraftd']['log_level']
-			return Config._loglevel_table[lvl_str] # this is a static table
+			return ProgramConfig._loglevel_table[lvl_str] # this is a static table
 
 		except KeyError:
 			return logging.INFO # default
