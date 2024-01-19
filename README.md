@@ -102,8 +102,6 @@ sudo nano /opt/minecraft/default/server.json
 **You are done with the basic configuration of minecraftd**  
 But you need to add it to your init system
 
-**If you are fine with the basic setup, you should change the** `"console_socket_path"` **entry in the above config to** `/tmp/mc.sock` **otherwise the daemon will fail to start, since we not created the default directory yet!**
-
 #### Installing systemd service
 
 Now we need an user, that runs the minecraft server, and a system group which members are allowed to attach to the the console.
@@ -153,6 +151,6 @@ minecraftd default
 
 You can stop or restart the minecraft server with systemctl from now on:
 ```bash
-sudo systemctl stop minecraftd
-sudo systemctl restart minecraftd
+sudo systemctl stop minecraftd@default
+sudo systemctl restart minecraftd@default
 ```
