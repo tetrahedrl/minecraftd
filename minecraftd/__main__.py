@@ -86,7 +86,7 @@ def attachSession(server_cfg):
 def main():
 
 	server_name = sys.argv[-1]
-	if server_name == __file__ or server_name == '--daemon':
+	if server_name == __file__ or server_name == '--daemon' or 'bin/minecraftd' in server_name:
 		print("CRITICAL: Must supply a server name!")
 		sys.exit(1)
 
