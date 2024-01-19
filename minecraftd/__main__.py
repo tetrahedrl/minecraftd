@@ -86,6 +86,9 @@ def attachSession(server_cfg):
 def main():
 
 	server_name = sys.argv
+	if server_name == '' or server_name is None:
+		print("Must supply a server name!")
+		sys.exit(1)
 
 	try:
 		config_file_to_load = os.environ['MINECRAFTD_CONFIG']

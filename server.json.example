@@ -1,8 +1,8 @@
 {
     "server": {
         
-		"console_socket_path" : "/var/lib/minecraftd/control.sock",
-        "server_path" : "/opt/minecraft/default"
+		"console_socket_path" : "/var/lib/minecraftd/default.sock",
+        "server_path" : "/opt/minecraft/default",
         "server_jar" : "server.jar",
         "java" : "java",
 
