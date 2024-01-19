@@ -75,7 +75,7 @@ class ServerConfig(Config):
 	def socketPath(self):
 
 		try: # using .get() would result in some similar uglyness, because of the two levels
-			return self._cfg['minecraftd']['console_socket_path']
+			return self._cfg['server']['console_socket_path']
 
 		except KeyError:
 			return "/var/lib/minecraftd/control.sock"
