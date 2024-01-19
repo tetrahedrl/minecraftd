@@ -21,7 +21,7 @@ class ProgramConfig(Config):
 	_loglevel_table['CRITICAL'] 	= logging.CRITICAL
 
 	def servers(self):
-		return {name:path for name, path in self._cfg['minecraftd']['servers'].items()}
+		return {entry['server_name']:entry['server_config'] for entry in self._cfg['minecraftd']['servers']}
 	
 
 	def logLevel(self):
