@@ -7,16 +7,16 @@ from .lineprocessor import LineProcessor
 from .process import Process
 from .controlsocket import ControlSocket
 from .sessionclient import SessionClient
-from .config import Config
+from .config import ProgramConfig, ServerConfig
 
 CONFIG_FILE="/etc/minecraftd.json" # default
 
-def runDaemon(cfg):
-	logging.basicConfig(filename=cfg.logFilePath(), level=cfg.logLevel(), format="%(asctime)s - %(levelname)s: %(message)s")
+def runDaemon(program_cfg, server_cfg):
+	logging.basicConfig(filename=program_cfg.logFilePath(), level=program_cfg.logLevel(), format="%(asctime)s - %(levelname)s: %(message)s")
 	logging.info("Minecraftd is starting...")
 
 	try:
-		cs = ControlSocket(cfg.socketPath())
+		cs = ControlSocket(server_cfg.socketPath())
 
 	except FileNotFoundError:
 		logging.critical("Failed to create socket: Path not found")
@@ -27,13 +27,13 @@ def runDaemon(cfg):
 		return 1
 
 	try:
-		pr = Process(cfg.compileCommand(),cfg.cwd()) # starts the process
+		pr = Process(server_cfg.compileCommand(),server_cfg.cwd()) # starts the process
 
 	except FileNotFoundError as e:
 		logging.critical("Failed to start process: {}".format(str(e)))
 		return 1
 
-	lp = LineProcessor(pr,cs,cfg.historyLen())
+	lp = LineProcessor(pr,cs,program_cfg.historyLen())
 	lp.start()
 
 	# and now the ugly part:
@@ -48,7 +48,7 @@ def runDaemon(cfg):
 			signal.signal(signal.SIGINT, signal.SIG_IGN) # ignore any further sigint, because the shutdown process is already started
 			logging.info("Stopping minecraft server...")
 			lp.passLine("Minecraftd: Daemon is shuttig down! Stopping minecraft server...\n")
-			pr.sendCommandList(cfg.shutdownCommands()) # should contain "stop"
+			pr.sendCommandList(program_cfg.shutdownCommands()) # should contain "stop"
 
 
 	signal.signal(signal.SIGINT, signal.SIG_IGN) # we are shutting down, so signals are ignored
@@ -61,10 +61,10 @@ def runDaemon(cfg):
 	return pr.getReturnCode()
 
 
-def attachSession(cfg):
+def attachSession(server_cfg):
 
 	try:
-		sc = SessionClient(cfg.socketPath())
+		sc = SessionClient(server_cfg.socketPath())
 
 	except (ConnectionRefusedError,FileNotFoundError):
 		print("Couldn't connect to Minecraftd console (is the daemon running?)")
@@ -85,6 +85,7 @@ def attachSession(cfg):
 
 def main():
 
+	server_name = sys.argv
 
 	try:
 		config_file_to_load = os.environ['MINECRAFTD_CONFIG']
@@ -92,7 +93,8 @@ def main():
 		config_file_to_load = CONFIG_FILE
 
 	try:
-		cfg = Config(config_file_to_load)
+		program_cfg = ProgramConfig(config_file_to_load)
+		server_cfg = ServerConfig(program_cfg.servers[server_name])
 
 	except Exception as e:
 		print("CRITICAL: Failed to load config file: {}".format(str(e)))
@@ -100,12 +102,12 @@ def main():
 
 	if '--daemon' in sys.argv: # start daemon
 
-		rc = runDaemon(cfg)
+		rc = runDaemon(program_cfg,server_cfg)
 		sys.exit(rc) # the return code of minecraftd daemon is the return code of the minecraft server
 
 	else: # attach screen
 
-		attachSession(cfg)
+		attachSession(server_cfg)
 
 
 if __name__ == '__main__':
