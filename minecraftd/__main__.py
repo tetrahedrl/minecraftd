@@ -48,7 +48,7 @@ def runDaemon(program_cfg, server_cfg):
 			signal.signal(signal.SIGINT, signal.SIG_IGN) # ignore any further sigint, because the shutdown process is already started
 			logging.info("Stopping minecraft server...")
 			lp.passLine("Minecraftd: Daemon is shuttig down! Stopping minecraft server...\n")
-			pr.sendCommandList(program_cfg.shutdownCommands()) # should contain "stop"
+			pr.sendCommandList(server_cfg.shutdownCommands()) # should contain "stop"
 
 
 	signal.signal(signal.SIGINT, signal.SIG_IGN) # we are shutting down, so signals are ignored
